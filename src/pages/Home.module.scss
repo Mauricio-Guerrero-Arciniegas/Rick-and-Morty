@@ -134,7 +134,7 @@
   text-align: center;
   font-size: 1.5rem;
   margin: 1rem 0;
-  color: #00ff00;
+  color: #188618;
 
   span {
     font-weight: bold;
@@ -146,15 +146,29 @@
   text-align: center;
   font-size: 1.5rem;
   margin: 1rem 0;
-  color: #00ff00;
+  color: #167c16;
 
   span {
     font-weight: bold;
-    color: #fff;
+    color: #308a1a;
   }
 
   .count {
     font-weight: normal;
-    color: #9ba8ab;
+    color: #838686;
   }
+}
+
+.noResidents {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #9ba8ab;
+  margin: 2rem 0;
+}
+
+.error {
+  text-align: center;
+  color: #ff4c4c;
+  font-weight: bold;
+  margin-top: 1rem;
 }

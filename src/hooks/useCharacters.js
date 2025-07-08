@@ -35,7 +35,7 @@ export function useCharacters(locationName = '') {
         }
 
         setLocationTitle(location.name)
-        setResidentCount(location.residents.length) // ✅ Guardar nombre para mostrar
+        setResidentCount(location.residents.length) 
 
         const characterUrls = location.residents
         const promises = characterUrls.map((url) => axios.get(url))
@@ -44,7 +44,7 @@ export function useCharacters(locationName = '') {
 
         setCharacters(characterData)
       } catch (err) {
-        setError('Location not found')
+        setError('solo hay 126 locaciones disponibles')
         setCharacters([])
         setLocationTitle('')
         setResidentCount(0)

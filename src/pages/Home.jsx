@@ -8,22 +8,39 @@ import styles from './Home.module.scss'
 function Home() {
   const [search, setSearch] = useState('')
   const [query, setQuery] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+
   const { characters, loading, error, locationTitle, residentCount } = useCharacters(query)
   const { suggestions, notFound } = useLocationSuggestions(search)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setQuery(search.trim())
+    const trimmed = search.trim()
+
+    // Validación: si es número, debe estar entre 1 y 126
+    if (/^\d+$/.test(trimmed)) {
+      const number = Number(trimmed)
+      if (number < 1 || number > 126) {
+        setErrorMessage('Por favor ingresa un Id de locación entre 1 y 126')
+        setQuery(null) // evita búsqueda
+        return
+      }
+    }
+
+    setErrorMessage(null)
+    setQuery(trimmed)
+    setSearch('')
   }
 
   const handleSelectSuggestion = (name) => {
     setSearch(name)
     setQuery(name)
+    setErrorMessage(null)
   }
 
   return (
     <div>
-      {/* Búsqueda */}
+      {/* Formulario de búsqueda */}
       <form onSubmit={handleSubmit} className={styles.search}>
         <input
           type="text"
@@ -35,37 +52,55 @@ function Home() {
       </form>
 
       {/* Sugerencias */}
-        {notFound && (
-          <p className={styles.notFound}>Location not found</p>
-      )}
+      {notFound && <p className={styles.notFound}>Location not found</p>}
+
       {suggestions.length > 0 && !/^\d+$/.test(search) && (
-  <ul className={styles.suggestions}>
-    {suggestions.map((loc, index) => (
-      <li key={index} onClick={() => handleSelectSuggestion(loc)}>
-        {loc}
-      </li>
-    ))}
-  </ul>
-)}
-      {/* titulo de la locacion */}
+        <ul className={styles.suggestions}>
+          {suggestions.map((loc, index) => (
+            <li key={index} onClick={() => handleSelectSuggestion(loc)}>
+              {loc}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Título de la locación */}
       {locationTitle && (
         <h2 className={styles.resultTitle}>
-          🔍 Results from: <span>{locationTitle}</span>
+          Nombre de la locación: <span>{locationTitle}</span>
           {residentCount > 0 && (
-            <span className={styles.count}> ({residentCount} {residentCount === 1 ? 'resident' : 'residents'})</span>
+            <span className={styles.count}>
+              ({residentCount} {residentCount === 1 ? 'resident' : 'residents'})
+            </span>
           )}
         </h2>
       )}
 
-      {/* Resultados */}
-      {loading && <Loader />}
-      {error && <p>{error}</p>}
+      {/* Loader */}
+      {loading && (
+        <div className={styles.loadingInfo}>
+          <Loader />
+          <p>Loading character info...</p>
+        </div>
+      )}
 
-      <div className={styles.grid}>
-        {characters.map((char) => (
-          <CharacterCard key={char.id} character={char} />
-        ))}
-      </div>
+      {/* Errores */}
+      {errorMessage && <p className={styles.error}>{errorMessage}</p>}
+      {error && !errorMessage && <p className={styles.error}>{error}</p>}
+
+      {/* Sin residentes */}
+      {residentCount === 0 && query && !loading && !error && !errorMessage && (
+        <p className={styles.noResidents}>Esta locación no tiene residentes.</p>
+      )}
+
+      {/* Tarjetas */}
+      {residentCount > 0 && !errorMessage && (
+        <div className={styles.grid}>
+          {characters.map((char) => (
+            <CharacterCard key={char.id} character={char} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

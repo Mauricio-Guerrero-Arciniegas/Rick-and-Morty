@@ -7,6 +7,8 @@ export function useCharacters(locationName = '') {
   const [error, setError] = useState(null)
   const [locationTitle, setLocationTitle] = useState('')
   const [residentCount, setResidentCount] = useState(0)
+  const [locationType, setLocationType] = useState('')
+  const [locationDimension, setLocationDimension] = useState('')
 
   useEffect(() => {
     async function fetchByLocation() {
@@ -15,7 +17,6 @@ export function useCharacters(locationName = '') {
         setError(null)
         setLocationTitle('')
         
-
         if (!locationName) {
           const res = await axios.get('https://rickandmortyapi.com/api/character')
           setCharacters(res.data.results)
@@ -35,7 +36,9 @@ export function useCharacters(locationName = '') {
         }
 
         setLocationTitle(location.name)
-        setResidentCount(location.residents.length) 
+        setResidentCount(location.residents.length)
+        setLocationType(location.type)
+        setLocationDimension(location.dimension)
 
         const characterUrls = location.residents
         const promises = characterUrls.map((url) => axios.get(url))
@@ -48,7 +51,8 @@ export function useCharacters(locationName = '') {
         setCharacters([])
         setLocationTitle('')
         setResidentCount(0)
-
+        setLocationType('')
+        setLocationDimension('')
       } finally {
         setLoading(false)
       }
@@ -57,5 +61,13 @@ export function useCharacters(locationName = '') {
     fetchByLocation()
   }, [locationName])
 
-  return { characters, loading, error, locationTitle, residentCount }
+  return {
+    characters,
+    loading,
+    error,
+    locationTitle,
+    residentCount,
+    locationType,
+    locationDimension
+  }
 }

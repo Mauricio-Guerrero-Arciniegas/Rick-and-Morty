@@ -1,24 +1,26 @@
 .card {
-  background: #1e1e1e;
-  border-radius: 1rem;
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  border-radius: 1.2rem;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-  color: #fff;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.08);
+  backdrop-filter: blur(8px);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  color: #e0e0e0;
   display: flex;
   flex-direction: column;
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 255, 0, 0.2);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 255, 0, 0.3);
   }
 
   &__image {
     width: 100%;
-    height: auto; // ✅ que mantenga la proporción
-    object-fit: contain; // ✅ evitar recorte
-    aspect-ratio: 3 / 4; // ✅ mantener relación visual elegante
-    background-color: #000; // opcional, para que no se vea raro en imágenes con fondo transparente
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-bottom: 2px solid rgba(0, 255, 0, 0.1);
+    background-color: #000;
   }
 
   &__info {
@@ -26,20 +28,24 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 0.5rem;
   }
 
   &__name {
-    font-size: 1.2rem;
-    margin: 0 0 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #00ff00;
+    margin: 0;
+    line-height: 1.2;
   }
 
   &__status {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     color: #ccc;
+    font-weight: 500;
   }
 
   &__dot {
@@ -56,7 +62,12 @@
     }
 
     &--unknown {
-      background-color: #999;
+      background-color: #9ba8ab;
     }
+  }
+
+  &__extra {
+    font-size: 0.85rem;
+    color: #9ba8ab;
   }
 }

@@ -1,34 +1,40 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-export function useLocationSuggestions(searchTerm) {
+export function useLocationSuggestions(search) {
   const [suggestions, setSuggestions] = useState([])
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
-    if (!searchTerm || /^\d+$/.test(searchTerm)) {
-      // No sugerencias si es vacío o número
-      setSuggestions([])
-      setNotFound(false)
-      return
-    }
-
     const fetchSuggestions = async () => {
       try {
-        const res = await axios.get(
-          `https://rickandmortyapi.com/api/location/?name=${searchTerm}`
-        )
-        setSuggestions(res.data.results.map((loc) => loc.name))
-        setNotFound(false)
-      } catch (err) {
+        if (!search.trim()) {
+          // Mostrar TODAS las locaciones si el input está vacío
+          let allLocations = []
+          let nextUrl = 'https://rickandmortyapi.com/api/location'
+
+          while (nextUrl) {
+            const res = await axios.get(nextUrl)
+            allLocations = [...allLocations, ...res.data.results.map(loc => loc.name)]
+            nextUrl = res.data.info.next
+          }
+
+          setSuggestions(allLocations)
+          setNotFound(false)
+        } else {
+          const res = await axios.get(`https://rickandmortyapi.com/api/location/?name=${search}`)
+          const names = res.data.results.map(loc => loc.name)
+          setSuggestions(names)
+          setNotFound(names.length === 0)
+        }
+      } catch (error) {
         setSuggestions([])
         setNotFound(true)
       }
     }
 
-    const delay = setTimeout(fetchSuggestions, 300)
-    return () => clearTimeout(delay)
-  }, [searchTerm])
+    fetchSuggestions()
+  }, [search])
 
   return { suggestions, notFound }
 }

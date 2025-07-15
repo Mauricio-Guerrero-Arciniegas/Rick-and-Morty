@@ -1,5 +1,5 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'shwifty';
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -9,5 +9,14 @@
 }
 
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'GetSchwifty';
+  src: url('/fonts/get_schwifty.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }

@@ -1,66 +1,69 @@
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+.background {
+  min-height: 100vh;
+  background-image: url(../assets/starfield-deep-space-many-light-years-far-from-earth-elements-this-image-furnished-by-nasa_112293-106.avif);
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
   gap: 2rem;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  transition: background-color 0.4s ease;
 }
 
-.card {
-  background: #1e1e1e;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-  color: #fff;
+.title {
+  text-align: center;
+  font-size: 3rem;
+  color: #00ff00;
+  font-family: 'GetSchwifty', sans-serif;
+  margin: 2rem 1rem 1rem;
+  animation: fadeZoom 1s ease-out forwards;
+  opacity: 0;
+  transform: scale(0.8);
+  letter-spacing: 1px;
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 255, 0, 0.2);
+  span {
+    display: inline-block;
+    animation: bounceUp 0.8s ease forwards;
+    animation-delay: calc(0.05s * var(--i));
+    opacity: 0;
   }
+}
 
-  &__image {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+
+
+// Zoom general del h1
+@keyframes fadeZoom {
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
+}
 
-  &__info {
-    padding: 1rem;
+// Rebote individual de letras
+@keyframes bounceUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
   }
-
-  &__name {
-    font-size: 1.2rem;
-    margin: 0 0 0.5rem;
+  60% {
+    transform: translateY(-10px);
+    opacity: 1;
   }
-
-  &__status {
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #ccc;
+  100% {
+    transform: translateY(0);
+    opacity: 1; // ✅ esto asegura que el texto quede visible
   }
+}
 
-  &__dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-
-    &--alive {
-      background-color: #00ff00;
-    }
-
-    &--dead {
-      background-color: #ff4c4c;
-    }
-
-    &--unknown {
-      background-color: #999;
-    }
-  }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .search {
@@ -68,14 +71,7 @@
   justify-content: center;
   gap: 1rem;
   margin: 2rem;
-
-  input {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 1rem;
-    width: 250px;
-    font-size: 1rem;
-  }
+  position: relative;
 
   button {
     padding: 0.5rem 1.2rem;
@@ -93,32 +89,80 @@
   }
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+.inputWrapper {
+  position: relative;
+  width: 300px;
+
+  input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 2.2rem;
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    border-radius: 1rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: #00ff00;
+    backdrop-filter: blur(8px);
+    outline: none;
+    transition: all 0.3s ease;
+
+    &::placeholder {
+      color: #9ba8ab;
+    }
+
+    &:focus {
+      border-color: #00ff00;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .icon {
+    position: absolute;
+    left: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #00ff00;
+    font-size: 1rem;
+    pointer-events: none;
+  }
+
+  .arrow {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #00ff00;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 10;
+    pointer-events: auto;
+  }
 }
 
 .suggestions {
-  list-style: none;
-  background-color: #bdbcbc;
-  max-width: 300px;
-  margin: 0 auto;
-  margin-top: -1rem;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #1e1e1e;
+  border: 1px solid #00ff00;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
   border-radius: 0 0 10px 10px;
-  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 255, 0, 0.15);
+  list-style: none;
   padding: 0;
+  margin: 0;
 
   li {
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1rem;
     cursor: pointer;
     transition: background 0.2s ease;
+    color: #9ba8ab;
 
     &:hover {
-      background-color: #333;
+      background-color: #2a2a2a;
     }
   }
 }
@@ -128,18 +172,6 @@
   color: #ff4c4c;
   margin-top: 1rem;
   font-weight: bold;
-}
-
-.resultTitle {
-  text-align: center;
-  font-size: 1.5rem;
-  margin: 1rem 0;
-  color: #188618;
-
-  span {
-    font-weight: bold;
-    color: #242323;
-  }
 }
 
 .resultTitle {
@@ -159,11 +191,42 @@
   }
 }
 
-.noResidents {
+.resultBox {
   text-align: center;
-  font-size: 1.1rem;
+  margin: 1rem auto;
+  padding: 1rem;
+  background: #252525cc;
+  border-radius: 1rem;
+  max-width: 600px;
   color: #9ba8ab;
-  margin: 2rem 0;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.05);
+
+  p {
+    margin: 0.3rem 0;
+    font-size: 1.05rem;
+
+    strong {
+      color: #00ff00;
+    }
+  }
+}
+
+.randomMessage {
+  text-align: center;
+  color: #9ba8ab;
+  margin-top: 0.5rem;
+  font-style: italic;
+  font-size: 1rem;
+}
+
+.loadingInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #9ba8ab;
+  margin-top: 2rem;
+  font-size: 1.1rem;
 }
 
 .error {
@@ -171,4 +234,52 @@
   color: #ff4c4c;
   font-weight: bold;
   margin-top: 1rem;
+}
+
+.noResidents {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #9ba8ab;
+  margin: 2rem 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap; // ✅ permite que los botones salten de línea si no caben
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 2rem 1rem; // 🧩 margen lateral reducido en móviles
+
+  button {
+    background: #1e1e1e;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    font-size: 1rem;
+    min-width: 40px;
+    text-align: center;
+
+    &:hover {
+      background: #00ff00;
+      color: #000;
+    }
+  }
+
+  .activePage {
+    background: #00ff00;
+    color: #000;
+    font-weight: bold;
+  }
 }

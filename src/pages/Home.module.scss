@@ -1,14 +1,11 @@
 .background {
-  min-height: 100vh;
-  background-image: url(../assets/stars-galaxy-3440x1440-10307.jpg);
-  background-attachment: fixed;
+  background-image: url('../assets/background.jpg');
   background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed; 
   background-position: center;
-  display: flex;
-  flex-direction: column;
-  padding: 2rem 1rem;
-  gap: 2rem;
-  transition: background-color 0.4s ease;
+  min-height: 100vh;
+  padding: 1rem;
 }
 
 .title {

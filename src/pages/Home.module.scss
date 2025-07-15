@@ -28,9 +28,6 @@
   }
 }
 
-
-
-// Zoom general del h1
 @keyframes fadeZoom {
   to {
     opacity: 1;
@@ -38,7 +35,6 @@
   }
 }
 
-// Rebote individual de letras
 @keyframes bounceUp {
   0% {
     transform: translateY(20px);
@@ -50,7 +46,7 @@
   }
   100% {
     transform: translateY(0);
-    opacity: 1; // ✅ esto asegura que el texto quede visible
+    opacity: 1;
   }
 }
 
@@ -252,10 +248,10 @@
 
 .pagination {
   display: flex;
-  flex-wrap: wrap; // ✅ permite que los botones salten de línea si no caben
+  flex-wrap: wrap; 
   justify-content: center;
   gap: 0.5rem;
-  margin: 2rem 1rem; // 🧩 margen lateral reducido en móviles
+  margin: 2rem 1rem; 
 
   button {
     background: #1e1e1e;

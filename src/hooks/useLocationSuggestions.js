@@ -9,7 +9,6 @@ export function useLocationSuggestions(search) {
     const fetchSuggestions = async () => {
       try {
         if (!search.trim()) {
-          // Mostrar TODAS las locaciones si el input está vacío
           let allLocations = []
           let nextUrl = 'https://rickandmortyapi.com/api/location'
 

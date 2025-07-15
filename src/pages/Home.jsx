@@ -84,7 +84,7 @@ function Home() {
     if (Number.isInteger(Number(trimmed)) && trimmed !== '') {
       const number = Number(trimmed)
       if (number < 1 || number > 126) {
-        setErrorMessage('❗ Please enter a location number between 1 and 126')
+        setErrorMessage('Por favor selecciona una Locacion entre 1 y 126')
         setQuery(null)
         return
       }
@@ -123,7 +123,7 @@ function Home() {
 
       <form onSubmit={handleSubmit} className={styles.search}>
         <div className={styles.inputWrapper}>
-          <span className={styles.icon}>🔍</span>
+          <span className={styles.icon}></span>
           <input
             type="text"
             placeholder="Busca por Nombre o ID..."
@@ -178,7 +178,7 @@ function Home() {
       {loading && (
         <div className={styles.loadingInfo}>
           <Loader />
-          <p>⏳ Loading character info...</p>
+          <p>Loading character info...</p>
         </div>
       )}
 

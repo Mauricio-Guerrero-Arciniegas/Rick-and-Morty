@@ -1,42 +1,52 @@
 .card {
-  background: rgba(30, 30, 30, 0.8);
-  border: 1px solid rgba(0, 255, 0, 0.2);
+  background: rgba(30, 30, 30, 0.65);
+  border: 1px solid rgba(0, 255, 0, 0.15);
   border-radius: 1.2rem;
   overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.08);
-  backdrop-filter: blur(8px);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.08);
+  backdrop-filter: blur(12px);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
   color: #e0e0e0;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   &:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-10px) scale(1.03);
     box-shadow: 0 12px 30px rgba(0, 255, 0, 0.3);
+
+    .card__image {
+      transform: scale(1.05);
+    }
   }
 
   &__image {
-    width: 100%;
-    aspect-ratio: 3 / 4;
-    object-fit: cover;
-    border-bottom: 2px solid rgba(0, 255, 0, 0.1);
-    background-color: #000;
+    width: 90%;
+  margin: 0.5rem auto 0;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  background-color: #000;
+  border-radius: 0.8rem;
+  box-shadow: 0 4px 10px rgba(0, 255, 0, 0.1);
+  display: block;
   }
 
   &__info {
     padding: 1rem;
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    flex-grow: 1;
   }
 
   &__name {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #00ff00;
     margin: 0;
     line-height: 1.2;
+    letter-spacing: 0.5px;
   }
 
   &__status {
@@ -52,6 +62,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    animation: pulse 1.5s infinite ease-in-out;
 
     &--alive {
       background-color: #00ff00;
@@ -69,5 +80,18 @@
   &__extra {
     font-size: 0.85rem;
     color: #9ba8ab;
+    line-height: 1.3;
+  }
+}
+
+// Animación de pulso
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.4;
   }
 }

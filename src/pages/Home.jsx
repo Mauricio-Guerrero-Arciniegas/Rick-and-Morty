@@ -6,227 +6,242 @@ import { useLocationSuggestions } from '../hooks/useLocationSuggestions';
 
 import Loader from '../components/Loader';
 import CharacterCard from '../components/CharacterCard';
+import LoaderM from '../components/LoaderM/LoaderM';
 
 import styles from './Home.module.scss';
 
 function Home() {
-	const [search, setSearch] = useState('');
-	const [query, setQuery] = useState(null);
-	const [isRandom, setIsRandom] = useState(true);
-	const [errorMessage, setErrorMessage] = useState(null);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [isInputFocused, setIsInputFocused] = useState(false);
+  const [search, setSearch] = useState('');
+  const [query, setQuery] = useState(null);
+  const [isRandom, setIsRandom] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
 
-	const topRef = useRef(null);
-	const titleRef = useRef(null);
+  const topRef = useRef(null);
+  const titleRef = useRef(null);
 
-	const triggerTitleAnimation = () => {
-		const el = titleRef.current;
-		if (!el) return;
-		el.classList.remove(styles.animate);
-		void el.offsetWidth;
-		el.classList.add(styles.animate);
-	};
+  const triggerTitleAnimation = () => {
+    const el = titleRef.current;
+    if (!el) return;
+    el.classList.remove(styles.animate);
+    void el.offsetWidth;
+    el.classList.add(styles.animate);
+  };
 
-	const {
-		characters,
-		loading,
-		error,
-		locationTitle,
-		residentCount,
-		locationType,
-		locationDimension,
-	} = useCharacters(query);
+  const {
+    characters,
+    loading,
+    error,
+    locationTitle,
+    residentCount,
+    locationType,
+    locationDimension,
+  } = useCharacters(query);
 
-	const { suggestions, notFound } = useLocationSuggestions(search);
+  const { suggestions, notFound } = useLocationSuggestions(search);
 
-	const getValidRandomLocation = useCallback(async () => {
-		let location = null;
-		while (!location || location.residents.length === 0) {
-			const randomId = Math.floor(Math.random() * 126) + 1;
-			try {
-				const res = await axios.get(
-					`https://rickandmortyapi.com/api/location/${randomId}`,
-				);
-				location = res.data;
-			} catch {
-				continue;
-			}
-		}
-		return location.id;
-	}, []);
+  const getValidRandomLocation = useCallback(async () => {
+    let location = null;
+    while (!location || location.residents.length === 0) {
+      const randomId = Math.floor(Math.random() * 126) + 1;
+      try {
+        const res = await axios.get(
+          `https://rickandmortyapi.com/api/location/${randomId}`,
+        );
+        location = res.data;
+      } catch {
+        continue;
+      }
+    }
+    return location.id;
+  }, []);
 
-	useEffect(() => {
-		const fetchLocation = async () => {
-			const validId = await getValidRandomLocation();
-			setQuery(validId);
-		};
-		fetchLocation();
-	}, [getValidRandomLocation]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, []);
 
-	useEffect(() => {
-		topRef.current?.scrollIntoView({ behavior: 'smooth' });
-	}, [currentPage]);
+  useEffect(() => {
+    const fetchLocation = async () => {
+      const validId = await getValidRandomLocation();
+      setQuery(validId);
+    };
+    fetchLocation();
+  }, [getValidRandomLocation]);
 
-	useEffect(() => {
-		const handleClickOutside = (e) => {
-			if (!e.target.closest(`.${styles.inputWrapper}`)) {
-				setIsInputFocused(false);
-			}
-		};
-		document.addEventListener('click', handleClickOutside);
-		return () => document.removeEventListener('click', handleClickOutside);
-	}, []);
+  useEffect(() => {
+    topRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [currentPage]);
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		triggerTitleAnimation();
-		const trimmed = search.trim();
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(`.${styles.inputWrapper}`)) {
+        setIsInputFocused(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
-		if (Number.isInteger(Number(trimmed)) && trimmed !== '') {
-			const number = Number(trimmed);
-			if (number < 1 || number > 126) {
-				setErrorMessage('Por favor selecciona una Locacion entre 1 y 126');
-				setQuery(null);
-				return;
-			}
-		}
+  if (showLoader) return <LoaderM />;
 
-		setErrorMessage(null);
-		setQuery(trimmed);
-		setSearch('');
-		setIsRandom(false);
-		setCurrentPage(1);
-		setIsInputFocused(false);
-	};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    triggerTitleAnimation();
+    const trimmed = search.trim();
 
-	const handleSelectSuggestion = (name) => {
-		triggerTitleAnimation();
-		setSearch('');
-		setQuery(name);
-		setErrorMessage(null);
-		setIsRandom(false);
-		setCurrentPage(1);
-		setIsInputFocused(false);
-	};
+    if (Number.isInteger(Number(trimmed)) && trimmed !== '') {
+      const number = Number(trimmed);
+      if (number < 1 || number > 126) {
+        setErrorMessage('Por favor selecciona una Locacion entre 1 y 126');
+        setQuery(null);
+        return;
+      }
+    }
 
-	const residentsPerPage = 8;
-	const indexOfLast = currentPage * residentsPerPage;
-	const indexOfFirst = indexOfLast - residentsPerPage;
-	const currentResidents = characters.slice(indexOfFirst, indexOfLast);
+    setErrorMessage(null);
+    setQuery(trimmed);
+    setSearch('');
+    setIsRandom(false);
+    setCurrentPage(1);
+    setIsInputFocused(false);
+  };
 
-	return (
-		<div className={styles.background}>
-			<h1 ref={titleRef} className={`${styles.title} ${styles.animate}`}>
-				{'Rick and Morty Explorer'.split('').map((char, i) => (
-					<span key={i} style={{ '--i': i }}>
-						{char === ' ' ? '\u00A0' : char}
-					</span>
-				))}
-			</h1>
+  const handleSelectSuggestion = (name) => {
+    triggerTitleAnimation();
+    setSearch('');
+    setQuery(name);
+    setErrorMessage(null);
+    setIsRandom(false);
+    setCurrentPage(1);
+    setIsInputFocused(false);
+  };
 
-			<form onSubmit={handleSubmit} className={styles.search}>
-				<div className={styles.inputWrapper}>
-					<span className={styles.icon}></span>
-					<input
-						type="text"
-						placeholder="Busca por Nombre o ID..."
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						onFocus={() => setIsInputFocused(true)}
-					/>
-					<span
-						className={styles.arrow}
-						onClick={(e) => {
-							e.stopPropagation();
-							setIsInputFocused((prev) => !prev);
-						}}
-					>
-						▼
-					</span>
+  const residentsPerPage = 8;
+  const indexOfLast = currentPage * residentsPerPage;
+  const indexOfFirst = indexOfLast - residentsPerPage;
+  const currentResidents = characters.slice(indexOfFirst, indexOfLast);
 
-					{isInputFocused && suggestions.length > 0 && (
-						<ul className={styles.suggestions}>
-							{suggestions.map((loc, index) => (
-								<li key={index} onClick={() => handleSelectSuggestion(loc)}>
-									{loc}
-								</li>
-							))}
-						</ul>
-					)}
-				</div>
-				<button type="submit">Buscar</button>
-			</form>
+  return (
+    <div className={styles.background}>
+      <h1 ref={titleRef} className={`${styles.title} ${styles.animate}`}>
+        {'Rick and Morty Explorer'.split('').map((char, i) => (
+          <span key={i} style={{ '--i': i }}>
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
+      </h1>
 
-			{notFound && <p className={styles.notFound}>Locación no encontrada</p>}
-			{errorMessage && <p className={styles.error}>{errorMessage}</p>}
-			{error && !errorMessage && <p className={styles.error}>{error}</p>}
+      <form onSubmit={handleSubmit} className={styles.search}>
+        <div className={styles.inputWrapper}>
+          <span className={styles.icon}></span>
+          <input
+            type="text"
+            placeholder="Busca por Nombre o ID..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setIsInputFocused(true)}
+          />
+          <span
+            className={styles.arrow}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsInputFocused((prev) => !prev);
+            }}
+          >
+            ▼
+          </span>
 
-			{locationTitle && (
-				<div className={styles.resultBox}>
-					<h2 className={styles.resultTitle}>
-						Nombre de la Locación: <span>{locationTitle}</span>
-					</h2>
-					<p>
-						<strong>Residentes:</strong> {residentCount}{' '}
-						{residentCount === 1 ? 'residente' : 'residentes'}
-					</p>
-					<p>
-						<strong>Tipo:</strong> {locationType || 'Unknown'}
-					</p>
-					<p>
-						<strong>Dimensión:</strong> {locationDimension || 'Unknown'}
-					</p>
-				</div>
-			)}
+          {isInputFocused && suggestions.length > 0 && (
+            <ul className={styles.suggestions}>
+              {suggestions.map((loc, index) => (
+                <li key={index} onClick={() => handleSelectSuggestion(loc)}>
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <button type="submit">Buscar</button>
+      </form>
 
-			{isRandom && locationTitle && !loading && (
-				<p className={styles.randomMessage}>
-					Mostrando Locación aleatoria: <strong>{locationTitle}</strong>
-				</p>
-			)}
+      {notFound && <p className={styles.notFound}>Locación no encontrada</p>}
+      {errorMessage && <p className={styles.error}>{errorMessage}</p>}
+      {error && !errorMessage && <p className={styles.error}>{error}</p>}
 
-			{loading && (
-				<div className={styles.loadingInfo}>
-					<Loader />
-					<p>Loading character info...</p>
-				</div>
-			)}
+      {locationTitle && (
+        <div className={styles.resultBox}>
+          <h2 className={styles.resultTitle}>
+            Nombre de la Locación: <span>{locationTitle}</span>
+          </h2>
+          <p>
+            <strong>Residentes:</strong> {residentCount}{' '}
+            {residentCount === 1 ? 'residente' : 'residentes'}
+          </p>
+          <p>
+            <strong>Tipo:</strong> {locationType || 'Unknown'}
+          </p>
+          <p>
+            <strong>Dimensión:</strong> {locationDimension || 'Unknown'}
+          </p>
+        </div>
+      )}
 
-			{residentCount === 0 && query && !loading && !error && !errorMessage && (
-				<p className={styles.noResidents}>
-				Esta locación no tiene residentes.
-				</p>
-			)}
+      {isRandom && locationTitle && !loading && (
+        <p className={styles.randomMessage}>
+          Mostrando Locación aleatoria: <strong>{locationTitle}</strong>
+        </p>
+      )}
 
-			{residentCount > 0 && !errorMessage && (
-				<>
-					<div ref={topRef} className={styles.grid}>
-						{currentResidents.map((char) => (
-							<CharacterCard key={char.id} character={char} />
-						))}
-					</div>
+      {loading && (
+        <div className={styles.loadingInfo}>
+          <Loader />
+          <p>Loading character info...</p>
+        </div>
+      )}
 
-					{characters.length > residentsPerPage && (
-						<div className={styles.pagination}>
-							{Array.from(
-								{ length: Math.ceil(characters.length / residentsPerPage) },
-								(_, i) => (
-									<button
-										key={i}
-										onClick={() => setCurrentPage(i + 1)}
-										className={i + 1 === currentPage ? styles.activePage : ''}
-									>
-										{i + 1}
-									</button>
-								),
-							)}
-						</div>
-					)}
-				</>
-			)}
-		</div>
-	);
+      {residentCount === 0 &&
+        query &&
+        !loading &&
+        !error &&
+        !errorMessage && (
+          <p className={styles.noResidents}>
+            Esta locación no tiene residentes.
+          </p>
+        )}
+
+      {residentCount > 0 && !errorMessage && (
+        <>
+          <div ref={topRef} className={styles.grid}>
+            {currentResidents.map((char) => (
+              <CharacterCard key={char.id} character={char} />
+            ))}
+          </div>
+
+          {characters.length > residentsPerPage && (
+            <div className={styles.pagination}>
+              {Array.from(
+                { length: Math.ceil(characters.length / residentsPerPage) },
+                (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={i + 1 === currentPage ? styles.activePage : ''}
+                  >
+                    {i + 1}
+                  </button>
+                ),
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 }
 
 export default Home;

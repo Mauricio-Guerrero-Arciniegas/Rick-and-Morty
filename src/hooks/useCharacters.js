@@ -16,7 +16,9 @@ export function useCharacters(locationName = '') {
 				setLoading(true);
 				setError(null);
 				setLocationTitle('');
+				setCharacters([]);
 
+				// Si no hay búsqueda, retornar personajes aleatorios
 				if (!locationName) {
 					const res = await axios.get(
 						'https://rickandmortyapi.com/api/character',
@@ -27,7 +29,12 @@ export function useCharacters(locationName = '') {
 
 				let location;
 
-				if (Number.isInteger(Number(locationName))) {
+				// Validación segura: si es un ID numérico entre 1 y 126, usa como ID
+				if (
+					!isNaN(locationName) &&
+					Number(locationName) >= 1 &&
+					Number(locationName) <= 126
+				) {
 					const res = await axios.get(
 						`https://rickandmortyapi.com/api/location/${locationName}`,
 					);
@@ -39,24 +46,31 @@ export function useCharacters(locationName = '') {
 					location = res.data.results[0];
 				}
 
+				if (!location || !location.residents.length) {
+					setError('No residents found in this location');
+					return;
+				}
+
 				setLocationTitle(location.name);
 				setResidentCount(location.residents.length);
 				setLocationType(location.type);
 				setLocationDimension(location.dimension);
 
-				const characterUrls = location.residents;
-				const promises = characterUrls.map((url) => axios.get(url));
-				const responses = await Promise.all(promises);
-				const characterData = responses.map((res) => res.data);
+				// Obtener IDs de los personajes a partir de las URLs
+				const characterIds = location.residents.map((url) =>
+					url.split('/').pop(),
+				);
+				const idsQuery = characterIds.join(',');
 
-				setCharacters(characterData);
+				const res = await axios.get(
+					`https://rickandmortyapi.com/api/character/${idsQuery}`,
+				);
+				const data = Array.isArray(res.data) ? res.data : [res.data];
+
+				setCharacters(data);
 			} catch (err) {
-				setError('solo hay 126 locaciones disponibles');
-				setCharacters([]);
-				setLocationTitle('');
-				setResidentCount(0);
-				setLocationType('');
-				setLocationDimension('');
+				console.error(err);
+				setError('Error fetching characters');
 			} finally {
 				setLoading(false);
 			}
